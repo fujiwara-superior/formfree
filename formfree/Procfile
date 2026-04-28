@@ -1,1 +1,1 @@
-web: php /app/artisan about --no-interaction 2>&1 && php /app/artisan serve --host=0.0.0.0 --port=8000 2>&1
+web: chmod -R 777 /app/storage /app/bootstrap/cache && php /app/artisan config:clear && php /app/artisan cache:clear && php /app/artisan serve --host=0.0.0.0 --port=8000 2>&1
