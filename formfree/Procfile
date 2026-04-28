@@ -1,1 +1,1 @@
-web: chmod -R 777 /app/storage /app/bootstrap/cache && php /app/artisan migrate --force && php /app/artisan serve --host=0.0.0.0 --port=$PORT
+web: chmod -R 777 /app/storage /app/bootstrap/cache && php /app/artisan config:cache && php /app/artisan serve --host=0.0.0.0 --port=$PORT
