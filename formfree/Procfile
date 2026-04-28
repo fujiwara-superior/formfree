@@ -1,1 +1,1 @@
-web: php -S 0.0.0.0:$PORT -t /app/public /app/public/index.php 2>&1
+web: php -S 0.0.0.0:8000 /app/public/index.php
