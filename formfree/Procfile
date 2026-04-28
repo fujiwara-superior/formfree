@@ -1,1 +1,1 @@
-web: chmod -R 777 /app/storage /app/bootstrap/cache && php /app/artisan serve --host=0.0.0.0 --port=8000 2>&1 & sleep 8 && tail -f /app/storage/logs/laravel.log 2>&1
+web: echo "=== PORT=$PORT ===" && php /app/artisan serve --host=0.0.0.0 --port=$PORT 2>&1
