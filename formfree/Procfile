@@ -1,1 +1,1 @@
-web: php /app/artisan migrate:fresh --force 2>&1 && php /app/artisan serve --host=0.0.0.0 --port=$PORT 2>&1
+web: php /app/artisan migrate --force 2>&1 && php /app/artisan serve --host=0.0.0.0 --port=$PORT 2>&1
