@@ -117,29 +117,3 @@ class PlanUpgradedMail extends Mailable implements ShouldQueue
         return new Content(view: 'emails.plan-upgraded');
     }
 }
-
-
-// ============================================================
-// app/Mail/WelcomeMail.php
-// ============================================================
-class WelcomeMail extends Mailable implements ShouldQueue
-{
-    use Queueable, SerializesModels;
-
-    public function __construct(
-        public readonly object $user,
-        public readonly object $company
-    ) {
-        $this->queue = 'emails';
-    }
-
-    public function envelope(): Envelope
-    {
-        return new Envelope(subject: '【FormFree】ご登録ありがとうございます');
-    }
-
-    public function content(): Content
-    {
-        return new Content(view: 'emails.welcome');
-    }
-}
