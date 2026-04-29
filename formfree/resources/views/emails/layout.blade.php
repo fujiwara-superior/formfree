@@ -39,7 +39,7 @@ ol li{font-size:13px;color:#444;line-height:1.8;padding:3px 0}
   </div>
   <div class="foot">
     <p>© FormFree &nbsp;·&nbsp;
-       <a href="{{ route('unsubscribe', ['token' => $unsubToken ?? '']) }}">配信停止</a>
+       <a href="{{ config('app.url') }}/unsubscribe/{{ $unsubToken ?? 'default' }}">配信停止</a>
        &nbsp;·&nbsp;
        <a href="{{ config('app.url') }}/privacy">プライバシーポリシー</a>
     </p>
