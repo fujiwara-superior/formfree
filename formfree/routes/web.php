@@ -6,6 +6,7 @@
 use App\Http\Controllers\BillingController;
 use App\Http\Controllers\ConversionController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\OutputDefinitionController;
 use Illuminate\Support\Facades\Route;
 
 // ─── 認証不要 ───────────────────────────────────────────────
