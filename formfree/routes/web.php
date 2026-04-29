@@ -13,6 +13,9 @@ use Illuminate\Support\Facades\Route;
 Route::get('/',  fn() => view('welcome'));
 Route::get('/billing/success', [BillingController::class, 'success'])->name('billing.success');
 Route::get('/billing/cancel',  [BillingController::class, 'cancel'])->name('billing.cancel');
+Route::get('/unsubscribe/{token}', function() {
+    return redirect('/');
+})->name('unsubscribe');
 
 // ─── 認証が必要なルート ──────────────────────────────────────
 Route::middleware(['auth'])->group(function () {
