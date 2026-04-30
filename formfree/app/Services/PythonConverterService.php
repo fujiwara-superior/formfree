@@ -7,8 +7,8 @@ use Illuminate\Support\Facades\Log;
 
 class PythonConverterService
 {
-    private string $baseUrl;
-    private string $secret;
+    private ?string $baseUrl;
+    private ?string $secret;
 
     public function __construct()
     {

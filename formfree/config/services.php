@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'python_converter' => [
+        'url'    => env('PYTHON_CONVERTER_URL'),
+        'secret' => env('PYTHON_CONVERTER_SECRET'),
+    ],
+
 ];
