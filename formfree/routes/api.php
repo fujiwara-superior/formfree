@@ -4,8 +4,8 @@
 use App\Http\Controllers\WebhookController;
 use Illuminate\Support\Facades\Route;
 
-// Stripe Webhook（CSRF不要・認証不要）
-Route::post('/stripe/webhook', [WebhookController::class, 'handle'])
+// Stripe Webhook（CSRF不要・認証不要・Cashier経由）
+Route::post('/stripe/webhook', WebhookController::class)
     ->name('stripe.webhook');
 
 // Python → Laravel 変換完了通知（内部API）
