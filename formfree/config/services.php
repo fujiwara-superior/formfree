@@ -40,4 +40,9 @@ return [
         'secret' => env('PYTHON_CONVERTER_SECRET'),
     ],
 
+    'stripe' => [
+        'standard_price_id' => env('STRIPE_STANDARD_PRICE_ID'),
+        'pro_price_id'      => env('STRIPE_PRO_PRICE_ID'),
+    ],
+
 ];
