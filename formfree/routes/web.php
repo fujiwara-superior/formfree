@@ -7,6 +7,7 @@ use App\Http\Controllers\BillingController;
 use App\Http\Controllers\ConversionController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\OutputDefinitionController;
+use App\Http\Controllers\SubscriptionController;
 use Illuminate\Support\Facades\Route;
 
 // ─── 認証不要 ───────────────────────────────────────────────
@@ -53,6 +54,12 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/checkout', [BillingController::class, 'createCheckoutSession']) ->name('checkout');
         Route::get('/portal',    [BillingController::class, 'portal'])                ->name('portal');
     });
+
+    // サブスクリプション
+    Route::get('/subscription',          [SubscriptionController::class, 'index'])   ->name('subscription.index');
+    Route::post('/subscription/checkout',[SubscriptionController::class, 'checkout'])->name('subscription.checkout');
+    Route::get('/subscription/success',  [SubscriptionController::class, 'success']) ->name('subscription.success');
+    Route::post('/subscription/cancel',  [SubscriptionController::class, 'cancel'])  ->name('subscription.cancel');
 });
 
 // ─── 認証ルート（Laravel Breeze） ───────────────────────────
