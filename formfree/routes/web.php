@@ -10,7 +10,12 @@ use App\Http\Controllers\OutputDefinitionController;
 use Illuminate\Support\Facades\Route;
 
 // ─── 認証不要 ───────────────────────────────────────────────
-Route::get('/',  fn() => view('welcome'));
+Route::get('/', function () {
+    if (auth()->check()) {
+        return redirect()->route('dashboard');
+    }
+    return view('welcome');
+});
 Route::get('/billing/success', [BillingController::class, 'success'])->name('billing.success');
 Route::get('/billing/cancel',  [BillingController::class, 'cancel'])->name('billing.cancel');
 Route::get('/unsubscribe/{token}', function() {
