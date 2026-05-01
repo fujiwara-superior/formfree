@@ -3,6 +3,7 @@
     "type": "project",
     "require": {
         "php": "^8.2",
+        "laravel/cashier": "^15.4",
         "laravel/framework": "^11.0",
         "stripe/stripe-php": "^13.0"
     },

@@ -10,7 +10,7 @@ return new class extends Migration
     {
         // 出力CSV定義
         Schema::create('output_definitions', function (Blueprint $table) {
-            $table->uuid('id')->primary()->default(DB::raw('gen_random_uuid()'));
+            $table->uuid('id')->primary();
             $table->uuid('company_id');
             $table->string('name');
             $table->jsonb('columns'); // [{name, description}]
@@ -23,7 +23,7 @@ return new class extends Migration
 
         // 変換ジョブ
         Schema::create('conversion_jobs', function (Blueprint $table) {
-            $table->uuid('id')->primary()->default(DB::raw('gen_random_uuid()'));
+            $table->uuid('id')->primary();
             $table->uuid('company_id');
             $table->uuid('user_id');
             $table->uuid('output_definition_id')->nullable();
@@ -47,7 +47,7 @@ return new class extends Migration
 
         // 変換行データ（プレビュー・修正用）
         Schema::create('conversion_rows', function (Blueprint $table) {
-            $table->uuid('id')->primary()->default(DB::raw('gen_random_uuid()'));
+            $table->uuid('id')->primary();
             $table->uuid('job_id');
             $table->integer('row_index');
             $table->jsonb('data'); // {列名: 値}
