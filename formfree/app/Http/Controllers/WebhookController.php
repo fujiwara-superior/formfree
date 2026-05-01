@@ -23,17 +23,22 @@ class WebhookController extends CashierWebhookController
 
     private function syncUserPlan(array $payload): void
     {
-        $stripeId = $payload['data']['object']['customer'];
-        $priceId  = $payload['data']['object']['items']['data'][0]['price']['id'] ?? null;
-        $status   = $payload['data']['object']['status'];
+        $stripeId  = $payload['data']['object']['customer'];
+        $priceId   = $payload['data']['object']['items']['data'][0]['price']['id'] ?? null;
+        $status    = $payload['data']['object']['status'];
 
         if (!$stripeId || $status !== 'active') return;
 
-        $plan = match($priceId) {
-            config('services.stripe.standard_price_id') => 'standard',
-            config('services.stripe.pro_price_id')      => 'pro',
-            default => 'free',
-        };
+        $standardPriceId = config('services.stripe.standard_price_id');
+        $proPriceId      = config('services.stripe.pro_price_id');
+
+        if ($priceId === $standardPriceId) {
+            $plan = 'standard';
+        } elseif ($priceId === $proPriceId) {
+            $plan = 'pro';
+        } else {
+            $plan = 'free';
+        }
 
         User::where('stripe_id', $stripeId)->update(['plan' => $plan]);
     }
