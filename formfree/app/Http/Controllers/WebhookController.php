@@ -40,6 +40,15 @@ class WebhookController extends CashierWebhookController
             $plan = 'free';
         }
 
-        User::where('stripe_id', $stripeId)->update(['plan' => $plan]);
+        $updated = User::where('stripe_id', $stripeId)->update(['plan' => $plan]);
+
+        if ($updated === 0) {
+            // Cashier の subscriptions テーブルから user_id を探す
+            $subscription = \Laravel\Cashier\Subscription::where('stripe_id',
+                $payload['data']['object']['id'])->first();
+            if ($subscription) {
+                User::where('id', $subscription->user_id)->update(['plan' => $plan]);
+            }
+        }
     }
 }
