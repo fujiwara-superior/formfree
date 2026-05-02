@@ -22,6 +22,8 @@ Route::get('/billing/cancel',  [BillingController::class, 'cancel'])->name('bill
 Route::get('/unsubscribe/{token}', function() {
     return redirect('/');
 })->name('unsubscribe');
+Route::get('/terms',   fn() => view('legal.terms'))  ->name('terms');
+Route::get('/privacy', fn() => view('legal.privacy'))->name('privacy');
 
 // ─── 認証が必要なルート ──────────────────────────────────────
 Route::middleware(['auth'])->group(function () {

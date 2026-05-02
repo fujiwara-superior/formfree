@@ -74,8 +74,8 @@
     <div class="grid grid-cols-3 gap-4">
       @foreach([
         ['Free', '¥0', '月額', ['月10件まで', '出力定義3件', 'テキストPDF', 'Shift-JIS出力'], false],
-        ['Standard', '¥29,800', '月額（税込）', ['月100件まで', '出力定義無制限', 'スキャンPDF対応', '一括処理', 'メールサポート'], true],
-        ['Pro', '¥79,800', '月額（税込）', ['月500件まで', 'Standardの全機能', 'APIアクセス', 'Webhook連携', '優先サポート'], false],
+        ['Standard', '¥3,980', '月額（税込）', ['月200件まで', '出力定義無制限', 'スキャンPDF対応', '一括処理', 'メールサポート'], true],
+        ['Pro', '¥9,800', '月額（税込）', ['無制限変換', 'Standardの全機能', 'APIアクセス', 'Webhook連携', '優先サポート'], false],
       ] as [$name, $price, $period, $features, $popular])
       <div class="rounded-xl p-5 border {{ $popular ? 'border-blue-500 border-2' : 'border-gray-200' }}">
         @if($popular)

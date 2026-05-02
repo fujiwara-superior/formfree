@@ -9,8 +9,8 @@
   <p class="text-xs text-gray-400 mb-8">現在のプラン：
     <span class="font-medium text-gray-700">
       {{ match($company->plan) {
-        'standard' => 'Standard（月額 ¥29,800）',
-        'pro'      => 'Pro（月額 ¥79,800）',
+        'standard' => 'Standard（月額 ¥3,980）',
+        'pro'      => 'Pro（月額 ¥9,800）',
         default    => '無料プラン',
       } }}
     </span>
@@ -69,10 +69,10 @@
       <div class="mb-5"></div>
       @endif
       <h2 class="text-sm font-medium text-gray-900 mb-1">Standard</h2>
-      <p class="text-2xl font-medium text-gray-900 mb-0.5">¥29,800</p>
+      <p class="text-2xl font-medium text-gray-900 mb-0.5">¥3,980</p>
       <p class="text-xs text-gray-400 mb-4">月額（税込）</p>
       <ul class="space-y-2 mb-5">
-        @foreach(['月100件まで変換','出力定義の保存（無制限）','テキスト・スキャンPDF対応','Shift-JIS / UTF-8出力','処理履歴30日間保存','メールサポート'] as $f)
+        @foreach(['月200件まで変換','出力定義の保存（無制限）','テキスト・スキャンPDF対応','Shift-JIS / UTF-8出力','処理履歴30日間保存','メールサポート'] as $f)
         <li class="flex items-center gap-2 text-xs text-gray-600">
           <span class="text-green-500 flex-shrink-0">✓</span>{{ $f }}
         </li>
@@ -104,10 +104,10 @@
       <div class="mb-5"></div>
       @endif
       <h2 class="text-sm font-medium text-gray-900 mb-1">Pro</h2>
-      <p class="text-2xl font-medium text-gray-900 mb-0.5">¥79,800</p>
+      <p class="text-2xl font-medium text-gray-900 mb-0.5">¥9,800</p>
       <p class="text-xs text-gray-400 mb-4">月額（税込）</p>
       <ul class="space-y-2 mb-5">
-        @foreach(['月500件まで変換','Standardの全機能','一括処理（複数PDF同時）','REST APIアクセス','Webhook連携','優先サポート','処理履歴1年間保存'] as $f)
+        @foreach(['無制限変換','Standardの全機能','一括処理（複数PDF同時）','REST APIアクセス','Webhook連携','優先サポート','処理履歴1年間保存'] as $f)
         <li class="flex items-center gap-2 text-xs text-gray-600">
           <span class="text-green-500 flex-shrink-0">✓</span>{{ $f }}
         </li>

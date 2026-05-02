@@ -12,9 +12,9 @@
   <div class="row"><span class="lbl">リセット日</span><span class="val">翌月1日</span></div>
 </div>
 <div class="alert alert-warn">
-  Standardプランにアップグレードすると月100件まで変換できます。保存済みの出力定義はそのまま使えます。
+  Standardプランにアップグレードすると月200件まで変換できます。保存済みの出力定義はそのまま使えます。
 </div>
 <div class="center">
-  <a href="{{ route('billing.index') }}" class="btn btn-warning">プランをアップグレード（月額 29,800円〜）</a>
+  <a href="{{ route('billing.index') }}" class="btn btn-warning">プランをアップグレード（月額 3,980円〜）</a>
 </div>
 @endsection
