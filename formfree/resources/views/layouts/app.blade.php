@@ -45,6 +45,11 @@
          class="text-xs bg-blue-600 text-white px-3 py-1.5 rounded-md hover:bg-blue-700">
         アップグレード
       </a>
+      @else
+      <a href="{{ route('billing.index') }}"
+         class="text-xs text-gray-500 hover:text-gray-800">
+        プランとお支払い
+      </a>
       @endif
       <div class="text-xs text-gray-500">{{ auth()->user()?->name }}</div>
       <form method="POST" action="{{ route('logout') }}">
