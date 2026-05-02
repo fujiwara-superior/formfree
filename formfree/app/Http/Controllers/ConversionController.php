@@ -6,8 +6,8 @@ use App\Mail\ConversionCompletedMail;
 use App\Services\PythonConverterService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 
@@ -79,16 +79,27 @@ class ConversionController extends Controller
                 ->increment('use_count');
         }
 
-        // ⑤ SupabaseにPDFを保存
+        // ⑤ SupabaseにPDFを保存（REST API 直接）
         $file        = $request->file('pdf');
         $jobId       = (string) Str::uuid();
         $storagePath = "pdfs/{$company->id}/{$jobId}.pdf";
         $pdfType     = $this->detectPdfType($file);
 
-        Storage::disk('supabase')->put(
-            $storagePath,
-            file_get_contents($file->getRealPath())
-        );
+        $supabaseUrl = config('services.supabase.url');
+        $supabaseKey = config('services.supabase.key');
+
+        $uploadResponse = Http::withHeaders([
+            'apikey'        => $supabaseKey,
+            'Authorization' => "Bearer {$supabaseKey}",
+            'Content-Type'  => 'application/octet-stream',
+        ])->withBody(file_get_contents($file->getRealPath()), 'application/octet-stream')
+          ->post("{$supabaseUrl}/storage/v1/object/pdfs/{$storagePath}");
+
+        if (!$uploadResponse->successful()) {
+            return response()->json([
+                'error' => 'PDFのアップロードに失敗しました。しばらくしてから再度お試しください。',
+            ], 500);
+        }
 
         // ⑥ conversion_jobsにレコード作成
         DB::table('conversion_jobs')->insert([

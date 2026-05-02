@@ -40,6 +40,11 @@ return [
         'secret' => env('PYTHON_CONVERTER_SECRET'),
     ],
 
+    'supabase' => [
+        'url' => env('SUPABASE_URL'),
+        'key' => env('SUPA_SERVICE_KEY'),
+    ],
+
     'stripe' => [
         'standard_price_id' => env('STRIPE_STANDARD_PRICE_ID'),
         'pro_price_id'      => env('STRIPE_PRO_PRICE_ID'),
