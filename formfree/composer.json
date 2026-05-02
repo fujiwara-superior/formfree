@@ -3,6 +3,8 @@
     "type": "project",
     "require": {
         "php": "^8.2",
+        "ext-bcmath": "*",
+        "ext-pdo": "*",
         "laravel/cashier": "^15.4",
         "laravel/framework": "^11.0",
         "laravel/tinker": "^3.0",
