@@ -2,7 +2,7 @@
     "name": "formfree/formfree",
     "type": "project",
     "require": {
-        "php": "^8.2",
+        "php": "^8.4",
         "ext-bcmath": "*",
         "ext-pdo": "*",
         "laravel/cashier": "^15.4",
