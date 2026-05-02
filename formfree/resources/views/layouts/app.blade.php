@@ -11,9 +11,57 @@
   [x-cloak]{display:none}
   .animate-spin{animation:spin 1s linear infinite}
   @keyframes spin{to{transform:rotate(360deg)}}
+
+  /* ページ遷移ローディングバー */
+  #nprogress {
+    position:fixed; top:0; left:0; right:0; z-index:9999;
+    height:3px; background:#2563eb;
+    transition:width .2s ease;
+    width:0%;
+  }
+  #nprogress.loading { animation:progress-grow 1.5s ease-out forwards; }
+  @keyframes progress-grow {
+    0%   { width:0%; opacity:1; }
+    80%  { width:85%; opacity:1; }
+    100% { width:85%; opacity:1; }
+  }
+  #nprogress.done { width:100%; opacity:0; transition:width .15s ease, opacity .2s ease .1s; }
+
+  /* ボタン・リンクの即時フィードバック */
+  a, button { transition:opacity .1s ease, transform .1s ease; }
+  a:active:not(.no-feedback), button:active:not(.no-feedback) {
+    opacity:.7; transform:scale(.98);
+  }
 </style>
 </head>
 <body class="bg-gray-50 text-gray-900 antialiased">
+
+{{-- ページ遷移インジケーター --}}
+<div id="nprogress"></div>
+<script>
+(function(){
+  var bar = document.getElementById('nprogress');
+  function start(){
+    bar.className='loading';
+  }
+  function done(){
+    bar.className='done';
+    setTimeout(function(){ bar.className=''; bar.style.cssText=''; }, 400);
+  }
+  // 通常リンククリック時
+  document.addEventListener('click', function(e){
+    var a = e.target.closest('a');
+    if(!a) return;
+    var href = a.getAttribute('href');
+    if(!href || href.startsWith('#') || href.startsWith('javascript') || a.target==='_blank') return;
+    start();
+  });
+  // フォーム送信時
+  document.addEventListener('submit', function(){ start(); });
+  // ページ読み込み完了時
+  window.addEventListener('pageshow', function(){ done(); });
+})();
+</script>
 
 {{-- ナビゲーション --}}
 <nav class="bg-white border-b border-gray-200">
