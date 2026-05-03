@@ -41,7 +41,7 @@ class ConversionController extends Controller
             'columns.*.description'=> 'nullable|string|max:200',
             'csv_encoding'         => 'in:utf8,sjis',
             'save_definition'      => 'nullable',
-            'definition_name'      => 'required_if:save_definition,true|string|max:100',
+            'definition_name'      => 'nullable|string|max:100',
         ]);
 
         $company = auth()->user()?->company;
