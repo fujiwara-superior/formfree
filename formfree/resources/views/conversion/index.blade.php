@@ -186,6 +186,30 @@ document.getElementById('save-definition').addEventListener('change', function()
 // フォーム送信
 document.getElementById('upload-form').addEventListener('submit', async (e) => {
   e.preventDefault();
+
+  // クライアント側バリデーション
+  if (!document.getElementById('pdf-input').files[0]) {
+    alert('PDFファイルを選択してください');
+    return;
+  }
+  const defSelect = document.getElementById('definition-select');
+  if (!defSelect || !defSelect.value) {
+    const rows = document.querySelectorAll('#columns-body tr');
+    for (const row of rows) {
+      const name = row.querySelector('input[name$="[name]"]')?.value?.trim();
+      const desc = row.querySelector('input[name$="[description]"]')?.value?.trim();
+      if (!name || !desc) {
+        alert('列名と抽出ルールを入力してください（空欄の行があります）');
+        return;
+      }
+    }
+  }
+  if (document.getElementById('save-definition').checked &&
+      !document.getElementById('definition-name').value.trim()) {
+    alert('定義の名前を入力してください');
+    return;
+  }
+
   const overlay = document.getElementById('processing-overlay');
   const stepEl  = document.getElementById('processing-step');
   overlay.classList.remove('hidden');
