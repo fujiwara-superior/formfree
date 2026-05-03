@@ -36,7 +36,7 @@ class ConversionController extends Controller
         $request->validate([
             'pdf'                  => 'required|file|mimes:pdf|max:20480',
             'output_definition_id' => 'nullable|uuid',
-            'columns'              => 'required_without:output_definition_id|array|min:1',
+            'columns'              => 'nullable|array',
             'columns.*.name'       => 'nullable|string|max:50',
             'columns.*.description'=> 'nullable|string|max:200',
             'csv_encoding'         => 'in:utf8,sjis',
@@ -310,7 +310,10 @@ class ConversionController extends Controller
             return json_decode($def->columns, true);
         }
 
-        return $request->columns;
+        $columns = $request->columns ?? [];
+        return array_values(array_filter($columns, fn($col) =>
+            !empty($col['name']) || !empty($col['description'])
+        ));
     }
 
     private function detectPdfType($file): string

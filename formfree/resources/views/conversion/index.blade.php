@@ -30,7 +30,10 @@
 
     {{-- 出力定義 --}}
     <div class="bg-white border border-gray-200 rounded-xl p-5 mb-5">
-      <h2 class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-4">出力CSV定義</h2>
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xs font-medium text-gray-500 uppercase tracking-wide">出力CSV定義</h2>
+        <span class="text-xs text-blue-500 bg-blue-50 px-2 py-0.5 rounded-full">空欄のまま送信すると自動検出</span>
+      </div>
 
       {{-- 保存済み定義 --}}
       @if($definitions->isNotEmpty())
@@ -192,18 +195,7 @@ document.getElementById('upload-form').addEventListener('submit', async (e) => {
     alert('PDFファイルを選択してください');
     return;
   }
-  const defSelect = document.getElementById('definition-select');
-  if (!defSelect || !defSelect.value) {
-    const rows = document.querySelectorAll('#columns-body tr');
-    for (const row of rows) {
-      const name = row.querySelector('input[name$="[name]"]')?.value?.trim();
-      const desc = row.querySelector('input[name$="[description]"]')?.value?.trim();
-      if (!name || !desc) {
-        alert('列名と抽出ルールを入力してください（空欄の行があります）');
-        return;
-      }
-    }
-  }
+  // 列定義が空でも自動検出モードで動作するためバリデーション不要
   if (document.getElementById('save-definition').checked &&
       !document.getElementById('definition-name').value.trim()) {
     alert('定義の名前を入力してください');
