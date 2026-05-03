@@ -40,7 +40,7 @@ class ConversionController extends Controller
             'columns.*.name'       => 'required|string|max:50',
             'columns.*.description'=> 'required|string|max:200',
             'csv_encoding'         => 'in:utf8,sjis',
-            'save_definition'      => 'boolean',
+            'save_definition'      => 'nullable',
             'definition_name'      => 'required_if:save_definition,true|string|max:100',
         ]);
 
