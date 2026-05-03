@@ -6,9 +6,7 @@ use App\Mail\ConversionCompletedMail;
 use App\Services\PythonConverterService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 
 class ConversionController extends Controller
@@ -82,35 +80,12 @@ class ConversionController extends Controller
                 ->increment('use_count');
         }
 
-        // ⑤ SupabaseにPDFを保存（REST API 直接）
-        $file        = $request->file('pdf');
-        $jobId       = (string) Str::uuid();
-        $storagePath = "pdfs/{$company->id}/{$jobId}.pdf";
-        $pdfType     = $this->detectPdfType($file);
-
-        $supabaseUrl = config('services.supabase.url');
-        $supabaseKey = config('services.supabase.key');
-
-        try {
-            $pdfContent = file_get_contents($file->getRealPath());
-            $uploadResponse = Http::withHeaders([
-                'apikey'        => $supabaseKey,
-                'Authorization' => "Bearer {$supabaseKey}",
-                'Content-Type'  => 'application/octet-stream',
-            ])->withBody($pdfContent, 'application/octet-stream')
-              ->post("{$supabaseUrl}/storage/v1/object/pdfs/{$storagePath}");
-        } catch (\Exception $e) {
-            logger()->error('Supabase upload exception: ' . $e->getMessage());
-            return response()->json(['error' => 'PDFのアップロード中に例外が発生しました: ' . $e->getMessage()], 500);
-        }
-
-        if (!$uploadResponse->successful()) {
-            $body = $uploadResponse->body();
-            logger()->error('Supabase upload failed: ' . $body);
-            return response()->json([
-                'error' => 'PDFのアップロードに失敗しました。(' . $uploadResponse->status() . ') ' . substr($body, 0, 100),
-            ], 500);
-        }
+        // ⑤ PDFをbase64エンコード（Supabase Storage不使用）
+        $file       = $request->file('pdf');
+        $jobId      = (string) Str::uuid();
+        $pdfType    = $this->detectPdfType($file);
+        $pdfContent = file_get_contents($file->getRealPath());
+        $pdfBase64  = base64_encode($pdfContent);
 
         // ⑥ conversion_jobsにレコード作成
         DB::table('conversion_jobs')->insert([
@@ -119,7 +94,7 @@ class ConversionController extends Controller
             'user_id'              => auth()->id(),
             'output_definition_id' => $definitionId,
             'pdf_filename'         => $file->getClientOriginalName(),
-            'pdf_storage_path'     => $storagePath,
+            'pdf_storage_path'     => '',
             'pdf_type'             => $pdfType,
             'status'               => 'pending',
             'csv_encoding'         => $request->csv_encoding ?? 'sjis',
@@ -132,7 +107,7 @@ class ConversionController extends Controller
         $this->converter->requestConversion(
             jobId:       $jobId,
             companyId:   $company->id,
-            storagePath: $storagePath,
+            pdfBase64:   $pdfBase64,
             pdfType:     $pdfType,
             columns:     $columns,
             csvEncoding: $request->csv_encoding ?? 'sjis',

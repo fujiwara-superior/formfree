@@ -19,7 +19,7 @@ class PythonConverterService
     public function requestConversion(
         string $jobId,
         string $companyId,
-        string $storagePath,
+        string $pdfBase64,
         string $pdfType,
         array  $columns,
         string $csvEncoding
@@ -29,14 +29,14 @@ class PythonConverterService
                 'X-Api-Secret' => $this->secret,
                 'Content-Type' => 'application/json',
             ])
-            ->timeout(10)
+            ->timeout(30)
             ->post("{$this->baseUrl}/convert", [
-                'job_id'           => $jobId,
-                'company_id'       => $companyId,
-                'pdf_storage_path' => $storagePath,
-                'pdf_type'         => $pdfType,
-                'columns'          => $columns,
-                'csv_encoding'     => $csvEncoding,
+                'job_id'      => $jobId,
+                'company_id'  => $companyId,
+                'pdf_content' => $pdfBase64,
+                'pdf_type'    => $pdfType,
+                'columns'     => $columns,
+                'csv_encoding'=> $csvEncoding,
             ]);
         } catch (\Exception $e) {
             // 即時レスポンスを返す設計のためエラーは記録のみ
