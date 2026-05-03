@@ -69,7 +69,11 @@ class AuthController extends Controller
         // ④ ウェルカムメール
         $user    = DB::table('users')->where('id', $userId)->first();
         $company = DB::table('companies')->where('id', $companyId)->first();
-        Mail::to($request->email)->send(new \App\Mail\WelcomeMail($user, $company));
+        try {
+            Mail::to($request->email)->send(new \App\Mail\WelcomeMail($user, $company));
+        } catch (\Exception $e) {
+            logger()->error('Welcome mail failed: ' . $e->getMessage());
+        }
 
         return redirect()->route('dashboard')
             ->with('success', 'ご登録ありがとうございます。まずは最初のPDFを変換してみてください。');
