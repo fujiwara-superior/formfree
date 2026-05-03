@@ -44,7 +44,10 @@ class ConversionController extends Controller
             'definition_name'      => 'required_if:save_definition,true|string|max:100',
         ]);
 
-        $company = auth()->user()->company;
+        $company = auth()->user()?->company;
+        if (!$company) {
+            return response()->json(['error' => 'ログインし直してください（会社情報が見つかりません）'], 401);
+        }
 
         // ① 月次上限チェック
         $usedCount = $this->getMonthlyUsedCount($company->id);
@@ -88,16 +91,24 @@ class ConversionController extends Controller
         $supabaseUrl = config('services.supabase.url');
         $supabaseKey = config('services.supabase.key');
 
-        $uploadResponse = Http::withHeaders([
-            'apikey'        => $supabaseKey,
-            'Authorization' => "Bearer {$supabaseKey}",
-            'Content-Type'  => 'application/octet-stream',
-        ])->withBody(file_get_contents($file->getRealPath()), 'application/octet-stream')
-          ->post("{$supabaseUrl}/storage/v1/object/pdfs/{$storagePath}");
+        try {
+            $pdfContent = file_get_contents($file->getRealPath());
+            $uploadResponse = Http::withHeaders([
+                'apikey'        => $supabaseKey,
+                'Authorization' => "Bearer {$supabaseKey}",
+                'Content-Type'  => 'application/octet-stream',
+            ])->withBody($pdfContent, 'application/octet-stream')
+              ->post("{$supabaseUrl}/storage/v1/object/pdfs/{$storagePath}");
+        } catch (\Exception $e) {
+            logger()->error('Supabase upload exception: ' . $e->getMessage());
+            return response()->json(['error' => 'PDFのアップロード中に例外が発生しました: ' . $e->getMessage()], 500);
+        }
 
         if (!$uploadResponse->successful()) {
+            $body = $uploadResponse->body();
+            logger()->error('Supabase upload failed: ' . $body);
             return response()->json([
-                'error' => 'PDFのアップロードに失敗しました。しばらくしてから再度お試しください。',
+                'error' => 'PDFのアップロードに失敗しました。(' . $uploadResponse->status() . ') ' . substr($body, 0, 100),
             ], 500);
         }
 
