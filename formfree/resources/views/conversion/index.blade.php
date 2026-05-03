@@ -210,8 +210,12 @@ document.getElementById('upload-form').addEventListener('submit', async (e) => {
       overlay.classList.add('hidden');
       if (data.limit_reached) {
         window.location.href = '{{ route("billing.index") }}';
+      } else if (data.errors) {
+        // Laravel validation errors (422)
+        const msgs = Object.values(data.errors).flat().join('\n');
+        alert(msgs || data.message || 'エラーが発生しました');
       } else {
-        alert(data.error || 'エラーが発生しました');
+        alert(data.error || data.message || 'エラーが発生しました');
       }
       return;
     }
