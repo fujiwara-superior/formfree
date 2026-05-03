@@ -71,7 +71,7 @@ class AuthController extends Controller
         $company = DB::table('companies')->where('id', $companyId)->first();
         try {
             Mail::to($request->email)->send(new \App\Mail\WelcomeMail($user, $company));
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             logger()->error('Welcome mail failed: ' . $e->getMessage());
         }
 
