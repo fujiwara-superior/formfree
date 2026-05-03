@@ -199,8 +199,9 @@ document.getElementById('upload-form').addEventListener('submit', async (e) => {
   try {
     const formData = new FormData(e.target);
     const res      = await fetch('{{ route("conversion.upload") }}', {
-      method: 'POST',
-      body:   formData,
+      method:  'POST',
+      headers: { 'Accept': 'application/json' },
+      body:    formData,
     });
     const data = await res.json();
     clearInterval(interval);
