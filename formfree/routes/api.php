@@ -18,6 +18,7 @@ Route::post('/internal/job-completed', function (\Illuminate\Http\Request $reque
         'job_id'    => 'required|uuid',
         'status'    => 'required|in:completed,failed',
         'row_count' => 'nullable|integer',
+        'rows'      => 'nullable|array',
         'error'     => 'nullable|string',
     ]);
 
@@ -27,6 +28,39 @@ Route::post('/internal/job-completed', function (\Illuminate\Http\Request $reque
 
     if (!$job) {
         return response()->json(['error' => 'Job not found'], 404);
+    }
+
+    // jobステータスをSQLiteに反映（ポーリングで参照される）
+    $update = [
+        'status'     => $request->status,
+        'updated_at' => now(),
+    ];
+    if ($request->status === 'completed') {
+        $update['row_count']    = $request->row_count ?? 0;
+        $update['completed_at'] = now();
+    }
+    if ($request->status === 'failed') {
+        $update['error_message'] = $request->error ? substr($request->error, 0, 500) : null;
+    }
+    \Illuminate\Support\Facades\DB::table('conversion_jobs')
+        ->where('id', $request->job_id)
+        ->update($update);
+
+    // conversion_rowsをSQLiteに保存
+    if ($request->status === 'completed' && $request->rows) {
+        $inserts = [];
+        foreach ($request->rows as $i => $row) {
+            $inserts[] = [
+                'id'        => (string) \Illuminate\Support\Str::uuid(),
+                'job_id'    => $request->job_id,
+                'row_index' => $i,
+                'data'      => json_encode($row, JSON_UNESCAPED_UNICODE),
+                'is_edited' => 0,
+            ];
+        }
+        if ($inserts) {
+            \Illuminate\Support\Facades\DB::table('conversion_rows')->insert($inserts);
+        }
     }
 
     // 変換完了メールを送信
