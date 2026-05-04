@@ -248,6 +248,7 @@ class ConversionController extends Controller
 
         $query = DB::table('conversion_jobs')
             ->where('company_id', $company->id)
+            ->where('user_id', auth()->id())
             ->orderByDesc('created_at');
 
         if ($request->status) {

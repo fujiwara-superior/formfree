@@ -124,7 +124,7 @@
           ダッシュボード
         </a>
         <a href="{{ route('conversion.index') }}"
-           class="{{ request()->routeIs('conversion.*') ? 'text-blue-600' : 'text-gray-500 hover:text-gray-800' }}">
+           class="{{ request()->routeIs('conversion.index', 'conversion.preview') ? 'text-blue-600' : 'text-gray-500 hover:text-gray-800' }}">
           変換する
         </a>
         <a href="{{ route('definitions.index') }}"
