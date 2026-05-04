@@ -3,83 +3,110 @@
 namespace App\Http\Controllers;
 
 use App\Models\Company;
-use Laravel\Cashier\Http\Controllers\WebhookController as CashierWebhookController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Stripe\Event;
+use Stripe\Exception\SignatureVerificationException;
+use Stripe\Webhook;
 use Symfony\Component\HttpFoundation\Response;
 
-class WebhookController extends CashierWebhookController
+class WebhookController extends Controller
 {
-    // checkout.session.completed: metadata に company_id / plan を含む
-    protected function handleCheckoutSessionCompleted(array $payload): Response
+    public function handleWebhook(Request $request): Response
     {
-        $session    = $payload['data']['object'];
-        $companyId  = $session['metadata']['company_id'] ?? null;
-        $plan       = $session['metadata']['plan'] ?? null;
-        $customerId = $session['customer'] ?? null;
+        $payload = $request->getContent();
+        $sigHeader = $request->header('Stripe-Signature');
+        $secret = config('stripe.webhook_secret');
 
-        if ($companyId && $plan) {
-            Company::where('id', $companyId)->update([
-                'plan'               => $plan,
-                'monthly_job_limit'  => $this->jobLimit($plan),
-                'stripe_customer_id' => $customerId,
-            ]);
+        // 署名検証
+        try {
+            $event = Webhook::constructEvent($payload, $sigHeader, $secret);
+        } catch (SignatureVerificationException $e) {
+            Log::warning('Stripe webhook signature verification failed', ['error' => $e->getMessage()]);
+            return response('Invalid signature', 400);
+        } catch (\Exception $e) {
+            Log::error('Stripe webhook error', ['error' => $e->getMessage()]);
+            return response('Webhook error', 400);
         }
 
-        return $this->successMethod();
+        Log::info('Stripe webhook received', ['type' => $event->type]);
+
+        match ($event->type) {
+            'checkout.session.completed'       => $this->handleCheckoutCompleted($event),
+            'customer.subscription.created'    => $this->handleSubscriptionCreated($event),
+            'customer.subscription.updated'    => $this->handleSubscriptionUpdated($event),
+            'customer.subscription.deleted'    => $this->handleSubscriptionDeleted($event),
+            default                            => null,
+        };
+
+        return response('OK', 200);
     }
 
-    // 新規サブスクリプション作成時
-    protected function handleCustomerSubscriptionCreated(array $payload): Response
+    private function handleCheckoutCompleted(Event $event): void
     {
-        $response = parent::handleCustomerSubscriptionCreated($payload);
-        $this->syncCompanyPlan($payload);
-        return $response;
+        $session   = $event->data->object;
+        $companyId = $session->metadata->company_id ?? null;
+        $plan      = $session->metadata->plan ?? null;
+        $customerId = $session->customer ?? null;
+
+        if (!$companyId || !$plan) return;
+
+        Company::where('id', $companyId)->update([
+            'plan'               => $plan,
+            'monthly_job_limit'  => $this->jobLimit($plan),
+            'stripe_customer_id' => $customerId,
+        ]);
+
+        Log::info('Plan updated via checkout', ['company' => $companyId, 'plan' => $plan]);
     }
 
-    // プラン変更・更新時
-    protected function handleCustomerSubscriptionUpdated(array $payload): Response
+    private function handleSubscriptionCreated(Event $event): void
     {
-        $response = parent::handleCustomerSubscriptionUpdated($payload);
-        $this->syncCompanyPlan($payload);
-        return $response;
+        $this->syncSubscription($event->data->object);
     }
 
-    // 解約時
-    protected function handleCustomerSubscriptionDeleted(array $payload): Response
+    private function handleSubscriptionUpdated(Event $event): void
     {
-        $response = parent::handleCustomerSubscriptionDeleted($payload);
+        $this->syncSubscription($event->data->object);
+    }
 
-        $stripeId = $payload['data']['object']['customer'];
+    private function handleSubscriptionDeleted(Event $event): void
+    {
+        $stripeId = $event->data->object->customer;
+
         Company::where('stripe_customer_id', $stripeId)->update([
             'plan'              => 'free',
             'monthly_job_limit' => 10,
         ]);
 
-        return $response;
+        Log::info('Plan downgraded to free', ['stripe_customer' => $stripeId]);
     }
 
-    private function syncCompanyPlan(array $payload): void
+    private function syncSubscription(object $subscription): void
     {
-        $stripeId = $payload['data']['object']['customer'];
-        $priceId  = $payload['data']['object']['items']['data'][0]['price']['id'] ?? null;
-        $status   = $payload['data']['object']['status'];
+        $stripeId = $subscription->customer;
+        $priceId  = $subscription->items->data[0]->price->id ?? null;
+        $status   = $subscription->status;
 
         if (!$stripeId || $status !== 'active') return;
 
         $standardPriceId = config('stripe.prices.standard');
         $proPriceId      = config('stripe.prices.pro');
 
-        if ($priceId === $standardPriceId) {
-            $plan = 'standard';
-        } elseif ($priceId === $proPriceId) {
-            $plan = 'pro';
-        } else {
-            return;
-        }
+        $plan = match ($priceId) {
+            $standardPriceId => 'standard',
+            $proPriceId      => 'pro',
+            default          => null,
+        };
+
+        if (!$plan) return;
 
         Company::where('stripe_customer_id', $stripeId)->update([
             'plan'              => $plan,
             'monthly_job_limit' => $this->jobLimit($plan),
         ]);
+
+        Log::info('Subscription synced', ['stripe_customer' => $stripeId, 'plan' => $plan]);
     }
 
     private function jobLimit(string $plan): int
