@@ -7,8 +7,33 @@
 <meta name="csrf-token" content="{{ csrf_token() }}">
 <title>@yield('title', 'FormFree')</title>
 <script src="https://cdn.tailwindcss.com"></script>
+<style>
+  #nprogress{position:fixed;top:0;left:0;right:0;z-index:9999;height:3px;background:#2563eb;width:0%}
+  #nprogress.loading{animation:progress-grow 1.5s ease-out forwards}
+  @keyframes progress-grow{0%{width:0%;opacity:1}80%{width:85%;opacity:1}100%{width:85%;opacity:1}}
+  #nprogress.done{width:100%;opacity:0;transition:width .15s ease,opacity .2s ease .1s}
+  a,button{transition:opacity .1s ease,transform .1s ease}
+  a:active,button:active{opacity:.7;transform:scale(.98)}
+</style>
 </head>
 <body class="bg-gray-50 min-h-screen flex items-center justify-center py-12">
+<div id="nprogress"></div>
+<script>
+(function(){
+  var bar=document.getElementById('nprogress');
+  function start(){bar.className='loading';}
+  function done(){bar.className='done';setTimeout(function(){bar.className='';bar.style.cssText='';},400);}
+  document.addEventListener('click',function(e){
+    var a=e.target.closest('a');
+    if(!a)return;
+    var href=a.getAttribute('href');
+    if(!href||href.startsWith('#')||href.startsWith('javascript')||a.target==='_blank')return;
+    start();
+  });
+  document.addEventListener('submit',function(){start();});
+  window.addEventListener('pageshow',function(){done();});
+})();
+</script>
 
 <div class="w-full max-w-md px-4">
   {{-- ロゴ --}}

@@ -67,7 +67,7 @@
 <nav class="bg-white border-b border-gray-200">
   <div class="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
     <div class="flex items-center gap-8">
-      <a href="{{ route('dashboard') }}" class="text-sm font-medium text-gray-900">FormFree</a>
+      <a href="https://superior.co.jp/formfree/" class="text-sm font-medium text-gray-900">FormFree</a>
       <div class="flex items-center gap-5 text-sm">
         <a href="{{ route('dashboard') }}"
            class="{{ request()->routeIs('dashboard') ? 'text-blue-600' : 'text-gray-500 hover:text-gray-800' }}">
@@ -99,9 +99,6 @@
         プランとお支払い
       </a>
       @endif
-      <a href="https://superior.co.jp/formfree/" class="text-xs text-gray-400 hover:text-gray-600">
-        サービス紹介
-      </a>
       <div class="text-xs text-gray-500">{{ auth()->user()?->name }}</div>
       <form method="POST" action="{{ route('logout') }}">
         @csrf
