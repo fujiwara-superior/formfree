@@ -99,6 +99,9 @@
         プランとお支払い
       </a>
       @endif
+      <a href="https://superior.co.jp/formfree/" class="text-xs text-gray-400 hover:text-gray-600">
+        サービス紹介
+      </a>
       <div class="text-xs text-gray-500">{{ auth()->user()?->name }}</div>
       <form method="POST" action="{{ route('logout') }}">
         @csrf

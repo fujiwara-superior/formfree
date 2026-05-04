@@ -13,7 +13,12 @@
 <div class="w-full max-w-md px-4">
   {{-- ロゴ --}}
   <div class="text-center mb-8">
-    <a href="/" class="text-xl font-medium text-gray-900">FormFree</a>
+    <a href="https://superior.co.jp/formfree/" class="text-xs text-gray-400 hover:text-gray-600 mb-3 inline-block">
+      ← サービス紹介ページ
+    </a>
+    <div>
+      <a href="/" class="text-xl font-medium text-gray-900">FormFree</a>
+    </div>
     <p class="text-sm text-gray-500 mt-1">テンプレート不要のPDF→CSV変換</p>
   </div>
 
