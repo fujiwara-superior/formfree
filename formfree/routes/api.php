@@ -61,6 +61,18 @@ Route::post('/internal/job-completed', function (\Illuminate\Http\Request $reque
         if ($inserts) {
             \Illuminate\Support\Facades\DB::table('conversion_rows')->insert($inserts);
         }
+
+        // 自動検出モード（columns_snapshotが空）の場合、最初の行のキーからカラム定義を生成
+        $existingColumns = json_decode($job->columns_snapshot ?? '[]', true);
+        if (empty($existingColumns) && !empty($request->rows[0])) {
+            $autoColumns = array_map(
+                fn($key) => ['name' => $key, 'description' => ''],
+                array_keys((array) $request->rows[0])
+            );
+            \Illuminate\Support\Facades\DB::table('conversion_jobs')
+                ->where('id', $request->job_id)
+                ->update(['columns_snapshot' => json_encode($autoColumns, JSON_UNESCAPED_UNICODE)]);
+        }
     }
 
     // 変換完了メールを送信
