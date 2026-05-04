@@ -22,8 +22,8 @@ class SubscriptionController extends Controller
 
         $user    = Auth::user();
         $priceId = $request->plan === 'pro'
-            ? config('services.stripe.pro_price_id')
-            : config('services.stripe.standard_price_id');
+            ? config('stripe.prices.pro')
+            : config('stripe.prices.standard');
 
         $checkout = $user->newSubscription('default', $priceId)
             ->checkout([
