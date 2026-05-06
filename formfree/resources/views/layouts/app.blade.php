@@ -178,5 +178,30 @@
 @yield('content')
 
 @stack('scripts')
+
+{{-- Tawk.to チャットウィジェット --}}
+<script type="text/javascript">
+var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+(function(){
+var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+s1.async=true;
+s1.src='https://embed.tawk.to/69fb2bf64341331c3677f9f6/1jnui7ekr';
+s1.charset='UTF-8';
+s1.setAttribute('crossorigin','*');
+s0.parentNode.insertBefore(s1,s0);
+})();
+</script>
+<script type="text/javascript">
+Tawk_API = Tawk_API || {};
+Tawk_API.onLoad = function() {
+    @auth
+    Tawk_API.setAttributes({
+        name  : '{{ auth()->user()?->name }}',
+        email : '{{ auth()->user()?->email }}',
+        plan  : '{{ auth()->user()?->company?->plan ?? "free" }}',
+    }, function(error){});
+    @endauth
+};
+</script>
 </body>
 </html>
