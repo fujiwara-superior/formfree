@@ -46,6 +46,19 @@ class BillingController extends Controller
 
         try {
             $session = $stripe->checkout->sessions->create($params);
+        } catch (\Stripe\Exception\InvalidRequestException $e) {
+            // テストモードの顧客IDが残っている場合はメールにフォールバック
+            if (str_contains($e->getMessage(), 'No such customer')) {
+                unset($params['customer']);
+                $params['customer_email'] = $company->email;
+                try {
+                    $session = $stripe->checkout->sessions->create($params);
+                } catch (\Stripe\Exception\ApiErrorException $e2) {
+                    return response()->json(['error' => $e2->getMessage()], 500);
+                }
+            } else {
+                return response()->json(['error' => $e->getMessage()], 500);
+            }
         } catch (\Stripe\Exception\ApiErrorException $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         } catch (\Throwable $e) {
