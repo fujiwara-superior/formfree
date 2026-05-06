@@ -44,7 +44,13 @@ class BillingController extends Controller
             $params['customer_email'] = $company->email;
         }
 
-        $session = $stripe->checkout->sessions->create($params);
+        try {
+            $session = $stripe->checkout->sessions->create($params);
+        } catch (\Stripe\Exception\ApiErrorException $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        } catch (\Throwable $e) {
+            return response()->json(['error' => '決済セッションの作成に失敗しました'], 500);
+        }
 
         return response()->json(['checkout_url' => $session->url]);
     }
