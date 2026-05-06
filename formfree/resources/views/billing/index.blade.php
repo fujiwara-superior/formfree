@@ -69,7 +69,7 @@
       <div class="mb-5"></div>
       @endif
       <h2 class="text-sm font-medium text-gray-900 mb-1">Standard</h2>
-      <p class="text-2xl font-medium text-gray-900 mb-0.5">¥3,980</p>
+      <p class="text-2xl font-medium text-gray-900 mb-0.5">¥4,980</p>
       <p class="text-xs text-gray-400 mb-4">月額（税込）</p>
       <ul class="space-y-2 mb-5">
         @foreach(['月200件まで変換','出力定義の保存（無制限）','テキスト・スキャンPDF対応','Shift-JIS / UTF-8出力','処理履歴30日間保存','メールサポート'] as $f)
