@@ -24,7 +24,7 @@
         </div>
         <p id="drop-label" class="text-sm font-medium text-gray-700 mb-1">PDFをドラッグ＆ドロップ</p>
         <p class="text-xs text-gray-400">またはクリックしてファイルを選択 · 最大20MB</p>
-        <input type="file" id="pdf-input" name="pdf" accept=".pdf" class="hidden" required>
+        <input type="file" id="pdf-input" name="pdf" accept=".pdf" class="hidden">
       </div>
     </div>
 
