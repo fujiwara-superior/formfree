@@ -151,7 +151,12 @@ const pdfInput = document.getElementById('pdf-input');
 }));
 dropZone.addEventListener('drop', ev => {
   const file = ev.dataTransfer.files[0];
-  if (file?.type === 'application/pdf') setFile(file);
+  if (file?.type === 'application/pdf') {
+    const dt = new DataTransfer();
+    dt.items.add(file);
+    pdfInput.files = dt.files;
+    setFile(file);
+  }
 });
 pdfInput.addEventListener('change', () => setFile(pdfInput.files[0]));
 
